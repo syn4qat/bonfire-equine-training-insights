@@ -20,6 +20,7 @@ stride_cols = [
     "Stride Count Trot/Jog",
     "Stride Count Walk"
 ]
+######################### STRIDE ANALYSIS #########################
 # new dataframe for stride analysis, dropping rows where all stride columns are NaN
 df_stride = df.dropna(subset=stride_cols, how="all").copy()
 for stride in stride_cols:
@@ -44,13 +45,20 @@ cols_to_remove = df_stride.filter(like='Recovery', axis=1)
 df_stride = df_stride[[col for col in df_stride.columns if col not in cols_to_remove]]
 
 # simple scatter figure to visualize the stride analysis over time
-fig_scatter = px.scatter(df_stride, x="Activity Duration Axis", y="Gait", color="Gait", title="Stride Analysis Over Time")
+fig_scatter = px.scatter(df_stride, x="Activity Duration Axis", y="Gait", color="Gait", )
 fig_scatter.update_yaxes(categoryorder='array', categoryarray= ["No Stride"] + list(gait_names.values())[::-1])
 fig_scatter.update_xaxes(tickformat="%M:%S")
 fig_scatter.update_layout(
     xaxis_title="Activity Duration",
     yaxis_title="Gait"
 )
+
+################### HEART RATE ANALYSIS ###################
+# simple line figure to visualize the heart rate over time
+fig_heart_rate = px.line(df, x="Activity Duration Axis", y="Heart Rate")
+fig_heart_rate.update_xaxes(tickformat="%M:%S", title="Activity Duration")
+fig_heart_rate.update_yaxes(title="Heart Rate (bpm)")
+
 '''
 # old layout
 app.layout = [
@@ -138,6 +146,15 @@ app.layout = html.Div(
             children=[
                 html.H2("Stride Analysis Over Time"),
                 dcc.Graph(figure=fig_scatter)
+            ]
+        ),
+
+        # Heart Rate Graph
+        html.Div(
+            className="card",
+            children=[
+                html.H2("Heart Rate Over Time"),
+                dcc.Graph(figure=fig_heart_rate)
             ]
         ),
     ]
