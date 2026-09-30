@@ -59,20 +59,6 @@ fig_heart_rate = px.line(df, x="Activity Duration Axis", y="Heart Rate")
 fig_heart_rate.update_xaxes(tickformat="%M:%S", title="Activity Duration")
 fig_heart_rate.update_yaxes(title="Heart Rate (bpm)")
 
-'''
-# old layout
-app.layout = [
-    html.Div(
-        className="header",
-        children=f"Training Visualization - {horse_name}"
-    ),
-    dcc.Graph(figure=fig_scatter),
-    dag.AgGrid(
-        rowData=df_stride.to_dict('records'),
-        columnDefs=[{"field": i} for i in df_stride.columns]
-    )
-]
-'''
 
 app.layout = html.Div(
     className="Dashboard",
@@ -157,6 +143,18 @@ app.layout = html.Div(
                 dcc.Graph(figure=fig_heart_rate)
             ]
         ),
+
+        # Data Table
+        html.Div(
+            className="card",
+            children=[
+                html.H2("Session Data"),
+                dag.AgGrid(
+                    rowData=df_stride.to_dict('records'),
+                    columnDefs=[{"field": i} for i in df_stride.columns]
+                )
+            ]
+        )
     ]
 )
 if __name__ == '__main__':
