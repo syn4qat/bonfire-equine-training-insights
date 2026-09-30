@@ -61,7 +61,7 @@ fig_heart_rate.update_yaxes(title="Heart Rate (bpm)")
 
 
 app.layout = html.Div(
-    className="Dashboard",
+    className="dashboard",
     children=[
         # Header
         html.Div(
