@@ -109,18 +109,21 @@ fig_gait_heart_rate = px.scatter(
     y="Gait", 
     color="Heart Rate Zone", 
     color_discrete_map=zone_colors,
-    hover_data={
-        "Activity Duration Axis": True,
-        "Gait": False,
-        "Heart Rate Zone": True,
-        "Heart Rate": True
-    }
+    custom_data=["Heart Rate", "Heart Rate Zone"]
 )
 fig_gait_heart_rate.update_yaxes(categoryorder='array', categoryarray= ["No Stride"] + list(gait_names.values())[::-1])
 fig_gait_heart_rate.update_xaxes(tickformat="%M:%S")
 fig_gait_heart_rate.update_layout(
     xaxis_title="Activity Duration",
     yaxis_title="Gait"
+)
+fig_gait_heart_rate.update_traces(
+    hovertemplate=
+    "Time: %{x|%M:%S}<br>" 
+    "Gait: %{y}<br>"
+    "Heart Rate Zone: %{customdata[1]}<br>"
+    "Heart Rate: %{customdata[0]} bpm"
+    "<extra></extra>"
 )
 
 app.layout = html.Div(
