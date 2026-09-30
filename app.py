@@ -55,8 +55,40 @@ fig_stride.update_layout(
 )
 
 ################### HEART RATE ANALYSIS ###################
+max_heart_rate = 216 # max heart rate for particular horse, can be adjusted if needed
+heart_rate_zones = {
+    "No Zone": (0, 0.5 * max_heart_rate),
+    "Zone 1": (0.5 * max_heart_rate, 0.6 * max_heart_rate),
+    "Zone 2": (0.6 * max_heart_rate, 0.7 * max_heart_rate),
+    "Zone 3": (0.7 * max_heart_rate, 0.8 * max_heart_rate),
+    "Zone 4": (0.8 * max_heart_rate, 0.9 * max_heart_rate),
+    "Zone 5": (0.9 * max_heart_rate, max_heart_rate)
+}
+# Preparing df
+def get_heart_rate_zone(hr):
+    for zone, (lower, upper) in heart_rate_zones.items():
+        if lower <= hr < upper:
+            return zone
+    return "No Data"
+
+df["Heart Rate Zone"] = df["Heart Rate"].apply(get_heart_rate_zone)
+
+zone_colors = {
+    "No Zone": "gray",
+    "Zone 1": "blue",
+    "Zone 2": "green",
+    "Zone 3": "yellow",
+    "Zone 4": "orange",
+    "Zone 5": "red"
+}
 # simple line figure to visualize the heart rate over time
-fig_heart_rate = px.line(df, x="Activity Duration Axis", y="Heart Rate")
+fig_heart_rate = px.line(
+    df, 
+    x="Activity Duration Axis", 
+    y="Heart Rate",
+    color="Heart Rate Zone",
+    color_discrete_map=zone_colors,
+)
 fig_heart_rate.update_xaxes(tickformat="%M:%S", title="Activity Duration")
 fig_heart_rate.update_yaxes(title="Heart Rate (bpm)")
 
@@ -152,7 +184,12 @@ app.layout = html.Div(
                 html.H2("Session Data"),
                 dag.AgGrid(
                     rowData=df_stride.to_dict('records'),
-                    columnDefs=[{"field": i} for i in df_stride.columns]
+                    columnDefs=[{"field": i} for i in df_stride.columns],
+                    defaultColDef={
+                        "sortable": True,
+                        "filter": True,
+                        "resizable": True,
+                    },
                 )
             ]
         )
