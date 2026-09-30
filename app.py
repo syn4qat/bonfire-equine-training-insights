@@ -9,9 +9,10 @@ app = Dash()
 horse_name = df["Horse Name"].iloc[0]
 # Data conversion
 df["Timestamp"] = pd.to_datetime(df["Timestamp"])
-df["Activity Duration"] = pd.to_timedelta(df["Activity Duration"])
-df["Activity Duration in Seconds"] = df["Activity Duration"].dt.total_seconds()
-df["Activity Duration Axis"] = pd.to_datetime('1970/01/01') + df["Activity Duration"] # workaround as plotly express does not support timedelta as a type
+df["Activity Duration timedelta"] = pd.to_timedelta(df["Activity Duration"])
+df["Activity Duration in Seconds"] = df["Activity Duration timedelta"].dt.total_seconds()
+df["Activity Duration Axis"] = pd.to_datetime('1970/01/01') + df["Activity Duration timedelta"] # workaround as plotly express does not support timedelta as a type
+df["Distance (m)"] = df["Distance (m)"].fillna(0)
 # colum set for further processing
 stride_cols = [
     "Stride Count Gallop",
@@ -93,6 +94,39 @@ app.layout = html.Div(
                     children=[
                         html.Div("Horse", className="kpi_label"),
                         html.Div(horse_name, className="kpi_value")
+                    ]
+                ),
+
+                html.Div(
+                    className="kpi_card",
+                    children=[
+                        html.Div("Session Duration", className="kpi_label"),
+                        html.Div(
+                            str(df["Activity Duration"].max()),
+                            className="kpi_value"
+                        )
+                    ]
+                ),
+
+                html.Div(
+                    className="kpi_card",
+                    children=[
+                        html.Div("Max Heart Rate", className="kpi_label"),
+                        html.Div(
+                            f"{df['Heart Rate'].max():.0f} bpm",
+                            className="kpi_value"
+                        )
+                    ]
+                ),
+
+                html.Div(
+                    className="kpi_card",
+                    children=[
+                        html.Div("Distance", className="kpi_label"),
+                        html.Div(
+                            f"{df['Distance (m)'].max():.0f} m",
+                            className="kpi_value"
+                        )
                     ]
                 )
             ]
