@@ -7,6 +7,7 @@ import plotly.express as px
 df = pd.read_csv('./data/TimeSeriesData.csv')
 app = Dash()
 horse_name = df["Horse Name"].iloc[0]
+activity_type = df["Activity Type"].iloc[0]
 # Data conversion
 df["Timestamp"] = pd.to_datetime(df["Timestamp"])
 df["Activity Duration timedelta"] = pd.to_timedelta(df["Activity Duration"])
@@ -71,7 +72,7 @@ app.layout = html.Div(
                     children=[
                         html.H1("Training Dashboard"),
                         html.P(
-                            f"{horse_name} - Training Session",
+                            f"{horse_name} - {activity_type} Session",
                             className="subtitle"
                         )
                     ]
