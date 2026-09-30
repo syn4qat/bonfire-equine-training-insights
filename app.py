@@ -130,7 +130,16 @@ app.layout = html.Div(
                     ]
                 )
             ]
-        )
+        ),
+
+        # Stride Analysis Graph
+        html.Div(
+            className="card",
+            children=[
+                html.H2("Stride Analysis Over Time"),
+                dcc.Graph(figure=fig_scatter)
+            ]
+        ),
     ]
 )
 if __name__ == '__main__':
