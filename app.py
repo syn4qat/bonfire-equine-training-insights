@@ -9,6 +9,24 @@ df = pd.read_csv('./data/TimeSeriesData.csv')
 app = Dash()
 horse_name = df["Horse Name"].iloc[0]
 activity_type = df["Activity Type"].iloc[0]
+# New Heart Zone Column
+max_heart_rate = 216 # max heart rate for particular horse, can be adjusted if needed
+heart_rate_zones = {
+    "No Zone": (0, 0.5 * max_heart_rate),
+    "Zone 1": (0.5 * max_heart_rate, 0.6 * max_heart_rate),
+    "Zone 2": (0.6 * max_heart_rate, 0.7 * max_heart_rate),
+    "Zone 3": (0.7 * max_heart_rate, 0.8 * max_heart_rate),
+    "Zone 4": (0.8 * max_heart_rate, 0.9 * max_heart_rate),
+    "Zone 5": (0.9 * max_heart_rate, float('inf'))
+}
+# Preparing df
+def get_heart_rate_zone(hr):
+    for zone, (lower, upper) in heart_rate_zones.items():
+        if lower < hr <= upper:
+            return zone
+    return "No Data"
+
+df["Heart Rate Zone"] = df["Heart Rate"].apply(get_heart_rate_zone)
 # Data conversion
 df["Timestamp"] = pd.to_datetime(df["Timestamp"])
 df["Activity Duration timedelta"] = pd.to_timedelta(df["Activity Duration"])
@@ -56,28 +74,10 @@ fig_stride.update_layout(
 )
 
 ################### HEART RATE ANALYSIS ###################
-max_heart_rate = 216 # max heart rate for particular horse, can be adjusted if needed
-heart_rate_zones = {
-    "No Zone": (0, 0.5 * max_heart_rate),
-    "Zone 1": (0.5 * max_heart_rate, 0.6 * max_heart_rate),
-    "Zone 2": (0.6 * max_heart_rate, 0.7 * max_heart_rate),
-    "Zone 3": (0.7 * max_heart_rate, 0.8 * max_heart_rate),
-    "Zone 4": (0.8 * max_heart_rate, 0.9 * max_heart_rate),
-    "Zone 5": (0.9 * max_heart_rate, float('inf'))
-}
-# Preparing df
-def get_heart_rate_zone(hr):
-    for zone, (lower, upper) in heart_rate_zones.items():
-        if lower < hr <= upper:
-            return zone
-    return "No Data"
-
-df["Heart Rate Zone"] = df["Heart Rate"].apply(get_heart_rate_zone)
-
 zone_colors = {
-    "No Zone": "gray",
-    "Zone 1": "blue",
-    "Zone 2": "green",
+    "No Zone": "lightgray",
+    "Zone 1": "lightblue",
+    "Zone 2": "lightgreen",
     "Zone 3": "yellow",
     "Zone 4": "orange",
     "Zone 5": "red"
@@ -102,6 +102,26 @@ for zone, color in zone_colors.items():
 fig_heart_rate.update_xaxes(tickformat="%M:%S", title="Activity Duration")
 fig_heart_rate.update_yaxes(title="Heart Rate (bpm)")
 
+######################## GAIT + HEART RATE ANALYSIS ########################
+fig_gait_heart_rate = px.scatter(
+    df_stride, 
+    x="Activity Duration Axis", 
+    y="Gait", 
+    color="Heart Rate Zone", 
+    color_discrete_map=zone_colors,
+    hover_data={
+        "Activity Duration Axis": True,
+        "Gait": False,
+        "Heart Rate Zone": True,
+        "Heart Rate": True
+    }
+)
+fig_gait_heart_rate.update_yaxes(categoryorder='array', categoryarray= ["No Stride"] + list(gait_names.values())[::-1])
+fig_gait_heart_rate.update_xaxes(tickformat="%M:%S")
+fig_gait_heart_rate.update_layout(
+    xaxis_title="Activity Duration",
+    yaxis_title="Gait"
+)
 
 app.layout = html.Div(
     className="dashboard",
@@ -187,6 +207,15 @@ app.layout = html.Div(
             ]
         ),
 
+        # Gait + Heart Rate Graph
+        html.Div(
+            className="card",
+            children=[
+                html.H2("Gait + Heart Rate Analysis"),
+                dcc.Graph(figure=fig_gait_heart_rate)
+            ]
+        ),
+        
         # Data Table
         html.Div(
             className="card",
