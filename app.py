@@ -46,10 +46,10 @@ cols_to_remove = df_stride.filter(like='Recovery', axis=1)
 df_stride = df_stride[[col for col in df_stride.columns if col not in cols_to_remove]]
 
 # simple scatter figure to visualize the stride analysis over time
-fig_scatter = px.scatter(df_stride, x="Activity Duration Axis", y="Gait", color="Gait", )
-fig_scatter.update_yaxes(categoryorder='array', categoryarray= ["No Stride"] + list(gait_names.values())[::-1])
-fig_scatter.update_xaxes(tickformat="%M:%S")
-fig_scatter.update_layout(
+fig_stride = px.scatter(df_stride, x="Activity Duration Axis", y="Gait", color="Gait", )
+fig_stride.update_yaxes(categoryorder='array', categoryarray= ["No Stride"] + list(gait_names.values())[::-1])
+fig_stride.update_xaxes(tickformat="%M:%S")
+fig_stride.update_layout(
     xaxis_title="Activity Duration",
     yaxis_title="Gait"
 )
@@ -132,7 +132,7 @@ app.layout = html.Div(
             className="card",
             children=[
                 html.H2("Stride Analysis Over Time"),
-                dcc.Graph(figure=fig_scatter)
+                dcc.Graph(figure=fig_stride)
             ]
         ),
 
