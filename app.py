@@ -50,15 +50,54 @@ fig_scatter.update_layout(
     xaxis_title="Activity Duration",
     yaxis_title="Gait"
 )
-
+'''
+# old layout
 app.layout = [
-    html.Div(children=f"Training Visualization - {horse_name}"),
+    html.Div(
+        className="header",
+        children=f"Training Visualization - {horse_name}"
+    ),
     dcc.Graph(figure=fig_scatter),
     dag.AgGrid(
         rowData=df_stride.to_dict('records'),
         columnDefs=[{"field": i} for i in df_stride.columns]
     )
 ]
+'''
 
+app.layout = html.Div(
+    className="Dashboard",
+    children=[
+        # Header
+        html.Div(
+            className="header",
+            children=[
+                html.Div(
+                    children=[
+                        html.H1("Training Dashboard"),
+                        html.P(
+                            f"{horse_name} - Training Session",
+                            className="subtitle"
+                        )
+                    ]
+                )
+            ]
+        ),
+
+        # KPI Cards
+        html.Div(
+            className="kpi_container",
+            children=[
+                html.Div(
+                    className="kpi_card",
+                    children=[
+                        html.Div("Horse", className="kpi_label"),
+                        html.Div(horse_name, className="kpi_value")
+                    ]
+                )
+            ]
+        )
+    ]
+)
 if __name__ == '__main__':
     app.run(debug = True)
