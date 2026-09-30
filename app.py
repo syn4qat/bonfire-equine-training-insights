@@ -63,7 +63,7 @@ heart_rate_zones = {
     "Zone 2": (0.6 * max_heart_rate, 0.7 * max_heart_rate),
     "Zone 3": (0.7 * max_heart_rate, 0.8 * max_heart_rate),
     "Zone 4": (0.8 * max_heart_rate, 0.9 * max_heart_rate),
-    "Zone 5": (0.9 * max_heart_rate, max_heart_rate)
+    "Zone 5": (0.9 * max_heart_rate, float('inf'))
 }
 # Preparing df
 def get_heart_rate_zone(hr):
@@ -86,7 +86,9 @@ zone_colors = {
 fig_heart_rate = go.Figure()
 for zone, color in zone_colors.items():
     zone_df = df.copy()
-    zone_df.loc[df["Heart Rate Zone"] != zone, "Heart Rate"] = None
+    previous_zone = zone_df["Heart Rate Zone"].shift(-1)
+    zone_df.loc[(df["Heart Rate Zone"] != zone) & (previous_zone != zone), "Heart Rate"] = None
+
     fig_heart_rate.add_trace(
         go.Scatter(
             x=zone_df["Activity Duration Axis"],
