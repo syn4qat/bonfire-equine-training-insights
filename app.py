@@ -2,6 +2,7 @@ from dash import Dash, html, dcc
 import dash_ag_grid as dag
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 
 # load data and initialize app
 df = pd.read_csv('./data/TimeSeriesData.csv')
@@ -67,7 +68,7 @@ heart_rate_zones = {
 # Preparing df
 def get_heart_rate_zone(hr):
     for zone, (lower, upper) in heart_rate_zones.items():
-        if lower <= hr < upper:
+        if lower < hr <= upper:
             return zone
     return "No Data"
 
@@ -82,13 +83,20 @@ zone_colors = {
     "Zone 5": "red"
 }
 # simple line figure to visualize the heart rate over time
-fig_heart_rate = px.line(
-    df, 
-    x="Activity Duration Axis", 
-    y="Heart Rate",
-    color="Heart Rate Zone",
-    color_discrete_map=zone_colors,
-)
+fig_heart_rate = go.Figure()
+for zone, color in zone_colors.items():
+    zone_df = df.copy()
+    zone_df.loc[df["Heart Rate Zone"] != zone, "Heart Rate"] = None
+    fig_heart_rate.add_trace(
+        go.Scatter(
+            x=zone_df["Activity Duration Axis"],
+            y=zone_df["Heart Rate"],
+            mode="lines",
+            name=zone,
+            connectgaps=False,
+            line=dict(color=color)
+        )
+    )
 fig_heart_rate.update_xaxes(tickformat="%M:%S", title="Activity Duration")
 fig_heart_rate.update_yaxes(title="Heart Rate (bpm)")
 
