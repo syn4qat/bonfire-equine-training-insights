@@ -134,6 +134,19 @@ gait_zone_figures = {}
 
 for gait in gait_types:
     gait_df = df_stride[df_stride["Gait"] == gait]
+    if gait_df.empty:
+        # If there are no entries for this gait, create an empty figure with a message
+        fig_donut = go.Figure(
+            go.Pie(
+                labels=["No Data"],
+                values=[1],
+                hole=0.5,
+                marker=dict(colors=["lightgray"])
+            )
+        )
+        fig_donut.update_layout(title=f"Heart Rate Zone Distribution for {gait}")
+        gait_zone_figures[gait] = fig_donut
+        continue
     zone_counts = gait_df["Heart Rate Zone"].value_counts().reindex(zone_colors.keys(), fill_value=0)
     fig_donut = go.Figure(
         go.Pie(
