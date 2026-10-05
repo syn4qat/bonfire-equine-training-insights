@@ -64,3 +64,17 @@ body {
     margin-top: 0;
     font-size: 20px;
 }
+
+.donut_container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.donut_card {
+    width: 100%;
+}
+
+.donut_card .js-plotly-plot {
+    width: 100%;
+}
