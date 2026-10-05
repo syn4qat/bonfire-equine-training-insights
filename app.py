@@ -103,6 +103,7 @@ fig_heart_rate.update_xaxes(tickformat="%M:%S", title="Activity Duration")
 fig_heart_rate.update_yaxes(title="Heart Rate (bpm)")
 
 ######################## GAIT + HEART RATE ANALYSIS ########################
+# same scatter figure as stride analysis but with color based on heart rate zone
 fig_gait_heart_rate = px.scatter(
     df_stride, 
     x="Activity Duration Axis", 
@@ -125,6 +126,26 @@ fig_gait_heart_rate.update_traces(
     "Heart Rate: %{customdata[0]} bpm"
     "<extra></extra>"
 )
+
+# now a donut diagram per stride type showing the distribution of heart rate zones
+gait_types = list(gait_names.values()) + ["No Stride"]
+
+gait_zone_figures = {}
+
+for gait in gait_types:
+    gait_df = df_stride[df_stride["Gait"] == gait]
+    zone_counts = gait_df["Heart Rate Zone"].value_counts().reindex(zone_colors.keys(), fill_value=0)
+    fig_donut = go.Figure(
+        go.Pie(
+            labels=zone_counts.index,
+            values=zone_counts.values,
+            hole=0.5,
+            marker=dict(colors=[zone_colors[zone] for zone in zone_counts.index])
+        )
+    )
+    fig_donut.update_layout(title=f"Heart Rate Zone Distribution for {gait}")
+    gait_zone_figures[gait] = fig_donut
+
 
 app.layout = html.Div(
     className="dashboard",
@@ -216,6 +237,25 @@ app.layout = html.Div(
             children=[
                 html.H2("Gait + Heart Rate Analysis"),
                 dcc.Graph(figure=fig_gait_heart_rate)
+            ]
+        ),
+
+        # Donut Charts for Each Gait Type
+        html.Div(
+            className="card",
+            children=[
+                html.H2("Heart Rate Zone Distribution by Gait"),
+                html.Div(
+                    className="donut_container",
+                    children=[
+                        html.Div(
+                            className="donut_card",
+                            children=[
+                                dcc.Graph(figure=gait_zone_figures[gait])
+                            ]
+                        ) for gait in gait_types
+                    ]
+                )
             ]
         ),
         
