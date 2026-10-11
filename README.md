@@ -27,10 +27,9 @@ The current implementation includes:
 
 *Additional Screenshots of the dashboard will be added here as development progresses.*
 
-![Bonfire dashboard overview](assets/dashboard-overview.png)
-![Gait and heart rate analysis](assets/gait-heart-rate-analysis.png)
-![Heart Rate Zone Distribution by Gait](assets/zone-distribution-gait.png)
-
+<img src="assets/dashboard-overview.png" alt="Bonfire dashboard overview" style="width:1000; height:auto;">
+<img src="assets/gait-heart-rate-analysis.png" alt="Gait and heart rate analysis" style="width:1000; height:auto;">
+<img src="assets/zone-distribution-gait.png" alt="Heart Rate Zone Distribution by Gait" style="width:1000; height:auto;">
 
 ## Technology Stack
 
